@@ -5,7 +5,6 @@
     const canvas = document.getElementById("imageCanvas");
     const context = canvas.getContext("2d");
 
-
     const mouse = {
         x: 0, y: 0,
         w: 0,
@@ -122,6 +121,9 @@
     image.src = "/images/demo.jpg";
 
     function update() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
         displayTransform.update();
         displayTransform.setHome();
 
