@@ -1,4 +1,4 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
+﻿document.addEventListener("DOMContentLoaded", function () {
     
     // https://stackoverflow.com/questions/33925012/how-to-pan-the-canvas
 
@@ -45,9 +45,9 @@
     canvas.addEventListener("mouseout", mouseMove, false);
     canvas.addEventListener("mouseover", mouseMove, false);
     canvas.addEventListener("mousewheel", mouseMove, false);
-    canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+    canvas.addEventListener("contextmenu", (e) => e.preventDefault(), false);
 
-    var displayTransform = {
+    const displayTransform = {
         x: 0, y: 0,
         ox: 0, oy: 0,
         scale: 1,
@@ -101,7 +101,31 @@
                 this.y -= mry;
             }
 
-            // TODO: mouse wheel here, zoom
+            if (mouse.w !== undefined && mouse.w !== 0) {
+                this.ox = mouse.x;
+                this.oy = mouse.y;
+                this.x = this.mouseX;
+                this.y = this.mouseY;
+
+                // zoom in
+                if (mouse.w > 0) {
+                    this.scale *= 1.1;
+                    mouse.w -= 20;
+                    if (mouse.w < 0) {
+                        mouse.w = 0;
+                    }
+                }
+
+                // zoom out
+                if (mouse.w < 0) {
+                    this.scale *= 1 / 1.1;
+                    mouse.w += 20;
+                    if (mouse.w > 0) {
+                        mouse.w = 0;
+                    }
+                }
+            }
+
 
             const screenX = mouse.x - this.ox;
             const screenY = mouse.y - this.oy;
@@ -117,7 +141,13 @@
          },
     };
 
-    var image = new Image();
+    const zoomInButton = document.getElementById("zoom-in-button");
+    const zoomOutButton = document.getElementById("zoom-out-button");
+
+    zoomInButton.addEventListener("click", () => displayTransform.scale *= 1.1, false);
+    zoomOutButton.addEventListener("click", () => displayTransform.scale /= 1.1, false);
+
+    const image = new Image();
     image.src = "/images/demo.jpg";
 
     function update() {
@@ -133,7 +163,7 @@
             context.drawImage(image, 0, 0);
         }
 
-        if (mouse.buttonRaw === 4) {
+        if (mouse.buttonRaw === 3) {
             displayTransform.x = 0;
             displayTransform.y = 0;
             displayTransform.scale = 1;

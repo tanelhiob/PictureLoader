@@ -10,3 +10,9 @@
 canvas#imageCanvas {
     position: absolute;
 }
+
+aside {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
