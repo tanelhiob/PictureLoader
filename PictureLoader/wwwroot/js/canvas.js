@@ -4,6 +4,7 @@
 
     const canvas = document.getElementById("imageCanvas");
     const context = canvas.getContext("2d");
+    context.imageSmoothingEnabled = false;
 
     const mouse = {
         x: 0, y: 0,
@@ -63,7 +64,6 @@
 
         setTransform: function () {
             const m = this.matrix;
-            const i = 0;
             context.setTransform(m[0], m[1], m[2], m[3], m[4], m[5], m[6]);
         },
 
@@ -126,7 +126,6 @@
                 }
             }
 
-
             const screenX = mouse.x - this.ox;
             const screenY = mouse.y - this.oy;
 
@@ -147,8 +146,35 @@
     zoomInButton.addEventListener("click", () => displayTransform.scale *= 1.1, false);
     zoomOutButton.addEventListener("click", () => displayTransform.scale /= 1.1, false);
 
+    // TODO: optimize canvas size on windows resize
+    // window.addEventListener("resize", windowResized);
+
+    // try to scale the image to 100% screen size
+    function imageLoaded() {
+        const width = image.width;
+        const height = image.height;
+
+        const canvasWidth = canvas.clientWidth;
+        const canvasHeight = canvas.clientHeight;
+
+        const widthMultiplier = canvasWidth / width;
+        const heightMultiplier = canvasHeight / height;
+       
+        // whichever is closer to 1
+        if (1 - Math.abs(widthMultiplier) >= 1 - Math.abs(heightMultiplier)) {
+            //displayTransform.oy = (canvasHeight - height) / 2;
+            displayTransform.scale = widthMultiplier;
+        }
+        else {
+            //displayTransform.ox = (canvasWidth - width) / 2;
+            displayTransform.scale = heightMultiplier;
+        }
+
+    }
+
     const image = new Image();
     image.src = "/images/demo.jpg";
+    image.addEventListener("load", imageLoaded, false);
 
     function update() {
         canvas.width = window.innerWidth;
